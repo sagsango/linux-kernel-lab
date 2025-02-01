@@ -1,0 +1,12 @@
+diff --git a/net/socket.c b/net/socket.c
+index ed3df2f749bf..f68f24896eeb 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -2013,6 +2013,7 @@ SYSCALL_DEFINE4(accept4, int, fd, struct sockaddr __user *, upeer_sockaddr,
+ SYSCALL_DEFINE3(accept, int, fd, struct sockaddr __user *, upeer_sockaddr,
+ 		int __user *, upeer_addrlen)
+ {
++	printk(KERN_INFO "CS561: This is the log from SYSCALL_DEFINE3(accept,..).\n");
+ 	return __sys_accept4(fd, upeer_sockaddr, upeer_addrlen, 0);
+ }
+ 
