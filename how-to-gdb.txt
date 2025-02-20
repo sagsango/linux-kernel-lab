@@ -1,0 +1,7 @@
+$ export PYTHONPATH=$PWD/scripts/gdb
+$ gdb vmlinux
+
+
+(gdb) add-auto-load-safe-path ~/linux-kernel-lab/linux
+(gdb) source scripts/gdb/vmlinux-gdb.py
+(gdb) help user-defined
