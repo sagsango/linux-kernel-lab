@@ -1,3 +1,6 @@
 [submodule "linux"]
 	path = linux
 	url = https://github.com/sagsango/linux.git
+[submodule "qemu-8.2.9"]
+	path = qemu-8.2.9
+	url = https://github.com/sagsango/qemu-8.2.9.git
