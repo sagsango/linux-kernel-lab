@@ -1,0 +1,927 @@
+From 2966b549d431e95fbbdfd559d2ff19ec1c206418 Mon Sep 17 00:00:00 2001
+From: Ubuntu <ssing214@ssing214-vm.cs.uic.edu>
+Date: Sat, 29 Mar 2025 13:09:26 +0000
+Subject: [PATCH] memfs a in memory fs which incr the data/file-context
+
+---
+ fs/Kconfig           |   7 +
+ fs/Makefile          |   1 +
+ fs/mymemfs/Makefile  |   1 +
+ fs/mymemfs/mymemfs.c | 872 +++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 881 insertions(+)
+ create mode 100644 fs/mymemfs/Makefile
+ create mode 100644 fs/mymemfs/mymemfs.c
+
+diff --git a/fs/Kconfig b/fs/Kconfig
+index 89fdbefd1075..db7f2a42c230 100644
+--- a/fs/Kconfig
++++ b/fs/Kconfig
+@@ -404,4 +404,11 @@ source "fs/unicode/Kconfig"
+ config IO_WQ
+ 	bool
+ 
++config MYMEMFS
++    tristate "MyMemFS (In-memory filesystem like tmpfs)"
++    depends on TMPFS
++    help
++      MyMemFS is an in-memory filesystem similar to tmpfs but implemented
++      separately while reusing shmem structures.
++
+ endmenu
+diff --git a/fs/Makefile b/fs/Makefile
+index c09016257f05..cf8b18b63937 100644
+--- a/fs/Makefile
++++ b/fs/Makefile
+@@ -130,3 +130,4 @@ obj-$(CONFIG_EFIVAR_FS)		+= efivarfs/
+ obj-$(CONFIG_EROFS_FS)		+= erofs/
+ obj-$(CONFIG_VBOXSF_FS)		+= vboxsf/
+ obj-$(CONFIG_ZONEFS_FS)		+= zonefs/
++obj-$(CONFIG_MYMEMFS) += mymemfs/
+diff --git a/fs/mymemfs/Makefile b/fs/mymemfs/Makefile
+new file mode 100644
+index 000000000000..eb520e7033e1
+--- /dev/null
++++ b/fs/mymemfs/Makefile
+@@ -0,0 +1 @@
++obj-$(CONFIG_MYMEMFS) += mymemfs.o
+diff --git a/fs/mymemfs/mymemfs.c b/fs/mymemfs/mymemfs.c
+new file mode 100644
+index 000000000000..860f08c9522e
+--- /dev/null
++++ b/fs/mymemfs/mymemfs.c
+@@ -0,0 +1,872 @@
++#include <linux/module.h>
++#include <linux/fs.h>
++#include <linux/slab.h>
++#include <linux/list.h>
++#include <linux/uaccess.h>
++#include <linux/init.h>
++#include <linux/string.h>
++
++#define FS_NAME "my_encrypted_mem_fs"
++#define ENCRYPT_KEY 0x55
++
++/*
++ * Implementation:
++ * 1. In mem file-system structure is a tree, where super-block have the root.
++ * 2. All the node in the tree are directory or files.
++ * 3. Every directory/file entry node have pointer to its parent directory.
++ * 4. All the directory/files under the same parent directory are linked with
++ *    each other by linked list ptr.
++ * 5. Directroy have the head pointer of the list containing its all direntries.
++ * 6. Unlink the on disk layout of file system, we have avoided to impelment
++ *    same layout in the memory.
++ *
++ * XXX:
++ *    xxxxxxxxxxxxxxxxxxxxxxxxxx
++ *    xx VFS to memFS mapping xx
++ *    xxxxxxxxxxxxxxxxxxxxxxxxxx
++ *    Our file systems is a tree, then how we maps it to
++ *    vfs data structres:
++ *	super_block,
++ *	struct inode,
++ *	struct file,
++ *    because VFS is going to use these struct for all the ops!!
++ *
++ *    <include/linux/fs.h>
++ *    struct super_block {
++ *     ...
++ *     void *s_fs_info; <-- This will point to root of the mem-fs-tree or mem_fs_sb
++ *     TODO: Ops
++ *     ...
++ *    }
++ *
++ *    <include/linux/fs.h>
++ *    struct file {
++ *	...
++ *	...
++ *	void *private_data; <-- this will point to tree node or mem_fs_entry
++ *	TODO: Ops
++ *	...
++ *	...
++ *    };
++ *
++ *    <include/linux/fs.h>
++ *    struct inode {
++ *	...
++ *	...
++ *	void *i_private; <- this will point to tree node or mem_fs_entry
++ *	TODO:Ops
++ *	...
++ *	...
++ *    };
++ *
++ *    These private pointer (for driver realted data) are
++ *    point to point to the node of the tree of mem_fs
++ *
++ *
++ * TODO:
++ * 1. Allocate a memory buffer and initialise the layout as disk,
++ *    which will include mpelemnt the superblock, inodeblock, imap block and
++ *    data block.
++ * 2. File permissions
++ * 3. File locking
++ * 4. mmap of the file
++ * 5. Concurrent read-write support.
++ */
++
++/*
++ * Testing:
++ * 1. We should be able to test encription.
++ *	a. To test the incription we should support the disableing enabling
++ *	encription from  the userspace (preferebly by systems call) so that
++ *	after write is done , we can disable to inription or change the
++ *	incription key from userspace to show that already written data is
++ *	not readable.
++ * 2. We should be able to test performance.
++ */
++
++/*
++ * In-memory file/directory entry
++ * this is a tree node of the file systems tree
++ *
++ *
++ * TODO:
++ *	We should also have link count.
++ *	We should only drop it when all
++ *	the links get droped!!
++ */
++struct mem_fs_entry {
++	struct list_head list;
++	struct mem_fs_entry *parent;
++	char *name;
++	char *data;
++	size_t size;
++	bool is_dir;
++	struct list_head children;
++};
++
++/*
++ * struct super_block {
++ *     ...
++ *     void                    *s_fs_info
++ *     ...
++ * }
++ * vfs super_block->s_fs_info will point to
++ * our mem_fs tree root!
++ */
++struct mem_fs_sb {
++	struct mem_fs_entry *root;
++};
++
++/* declarations */
++static void encrypt_decrypt(char *buf, size_t len);
++static ssize_t mem_fs_read_iter(struct kiocb *iocb, struct iov_iter *iter);
++static ssize_t mem_fs_write_iter(struct kiocb *iocb, struct iov_iter *iter);
++static int mem_fs_open(struct inode *inode, struct file *file);
++static loff_t mem_fs_llseek(struct file *file, loff_t offset, int whence);
++/* TODO: Get proper understanding of mem_fs_iteration_shared */
++static int mem_fs_iterate_shared(struct file *file, struct dir_context *ctx);
++static struct dentry *mem_fs_lookup(struct inode *dir,
++				    struct dentry *dentry,
++				    unsigned int flags);
++static int mem_fs_create(struct mnt_idmap *idmap,
++			 struct inode *dir,
++			 struct dentry *dentry,
++			 umode_t mode,
++			 bool excl);
++static int mem_fs_mkdir(struct mnt_idmap *idmap,
++			struct inode *dir,
++			struct dentry *dentry,
++			umode_t mode);
++static struct inode *mem_fs_get_inode(struct super_block *sb,
++				      umode_t mode);
++static int mem_fs_drop_inode(struct inode *inode);
++static struct mem_fs_entry *mem_fs_new_entry(const char *name, bool is_dir);
++static int mem_fs_fill_super(struct super_block *sb, void *data, int silent);
++static struct dentry *mem_fs_mount(struct file_system_type *fs_type,
++				   int flags,
++				   const char *dev_name,
++				   void *data);
++static int __init mem_fs_init(void);
++static void __exit mem_fs_exit(void);
++/* XXX: Brand new */
++static int mem_fs_setattr(struct mnt_idmap *, struct dentry *, struct iattr *);
++static int mem_fs_getattr(struct mnt_idmap *, const struct path *,
++			  struct kstat *, u32, unsigned int);
++static int mem_fs_rename (struct mnt_idmap *, struct inode *, struct dentry *,
++			  struct inode *, struct dentry *, unsigned int);
++static int mem_fs_fileattr_set(struct mnt_idmap *idmap,
++			       struct dentry *dentry, struct fileattr *fa);
++static int mem_fs_fileattr_get(struct dentry *dentry, struct fileattr *fa);
++
++static int mem_fs_readlink (struct dentry *, char __user *,int);
++static int mem_fs_link (struct dentry *,struct inode *,struct dentry *);
++static int mem_fs_symlink (struct mnt_idmap *, struct inode *,struct dentry *,
++			   const char *);
++static int mem_fs_mkdir (struct mnt_idmap *, struct inode *,struct dentry *,
++			 umode_t);
++static int mem_fs_rmdir (struct inode *,struct dentry *);
++static int mem_fs_unlink (struct inode *,struct dentry *);
++
++
++/*
++ * file operation supported
++ *
++ */
++static const struct file_operations mem_fs_file_ops = {
++	.open       = mem_fs_open,
++	.read_iter  = mem_fs_read_iter,
++	.write_iter = mem_fs_write_iter,
++	.llseek     = mem_fs_llseek,
++	/*
++	 * TODO: Support other ops, check "include/linux/fs.h"
++	 */
++};
++
++static const struct file_operations mem_fs_dir_ops = {
++	.iterate_shared = mem_fs_iterate_shared,
++	.open           = mem_fs_open,
++};
++
++static const struct inode_operations mem_fs_inode_ops = {
++	.create     = mem_fs_create,
++	.mkdir      = mem_fs_mkdir,
++	.lookup     = mem_fs_lookup,
++	/*
++	 * TODO:
++	 * We will create a pointer in case of link
++	 * As symlink can be a link to outside of the fs
++	 * for now we will not suport symlink outside of the fs
++	 */
++	.symlink    = mem_fs_symlink,
++	.link	    = mem_fs_link,
++	.unlink     = mem_fs_unlink,
++	.readlink   = mem_fs_readlink,
++	/*
++	 * TODO:
++	 * creation & destroy the dir
++	 */
++	.mkdir      = mem_fs_mkdir,
++	.rmdir      = mem_fs_rmdir,
++	.rename     = mem_fs_rename,
++	/*
++	 * TODO:
++	 * Attr support
++	 */
++	.setattr    = mem_fs_setattr,
++	.getattr    = mem_fs_getattr,
++	.fileattr_set = mem_fs_fileattr_set,
++	.fileattr_get = mem_fs_fileattr_get,
++};
++
++static const struct super_operations mem_fs_super_ops = {
++	.drop_inode = mem_fs_drop_inode,
++};
++
++
++/*
++ * This function is resposible for encrypting and dycripting the
++ * file data (content)
++ */
++static void encrypt_decrypt(char *buf, size_t len)
++{
++	printk(KERN_INFO "mymemfs: encrypt_decrypt\n");
++	printk(KERN_INFO "mymemfs: encrypt_decrypt: before<%*pE>\n", (int)len, buf);
++	for (size_t i = 0; i < len; i++)
++		buf[i] ^= ENCRYPT_KEY;
++	printk(KERN_INFO "mymemfs: encrypt_decrypt: after<%*pE>\n", (int)len, buf);
++
++}
++
++/*
++ * Read the file
++ */
++static ssize_t mem_fs_read_iter(struct kiocb *iocb, struct iov_iter *iter)
++{
++	struct file *file = iocb->ki_filp;
++	struct mem_fs_entry *entry = file->private_data;
++	size_t total_count = iov_iter_count(iter);
++	loff_t pos = iocb->ki_pos;
++	char *temp_buf;
++	size_t to_read;
++	ssize_t ret;
++
++	printk(KERN_INFO "mymemfs: mem_fs_read_iter\n");
++	if (!entry || entry->is_dir || !entry->data)
++		return -EINVAL;
++
++	if (pos >= entry->size)
++		return 0;
++
++	to_read = min_t(size_t, total_count, entry->size - pos);
++	if (!to_read)
++		return 0;
++
++	temp_buf = kmalloc(to_read, GFP_KERNEL);
++	if (!temp_buf)
++		return -ENOMEM;
++
++	memcpy(temp_buf, entry->data + pos, to_read);
++	encrypt_decrypt(temp_buf, to_read);
++
++	ret = copy_to_iter(temp_buf, to_read, iter);
++	kfree(temp_buf);
++
++	if (ret > 0)
++		iocb->ki_pos += ret;
++
++	return ret > 0 ? ret : -EFAULT;
++}
++/*
++ * Write to file
++ */
++static ssize_t mem_fs_write_iter(struct kiocb *iocb, struct iov_iter *iter)
++{
++	struct file *file = iocb->ki_filp;
++	struct mem_fs_entry *entry = file->private_data;
++	size_t total_count = iov_iter_count(iter);
++	loff_t pos = iocb->ki_pos;
++	char *temp_buf;
++	size_t new_size;
++
++	printk(KERN_INFO "mymemfs: mem_fs_write_iter\n");
++	if (!entry || entry->is_dir)
++		return -EINVAL;
++
++	temp_buf = kmalloc(total_count, GFP_KERNEL);
++	if (!temp_buf)
++		return -ENOMEM;
++
++	if (copy_from_iter(temp_buf, total_count, iter) != total_count) {
++		kfree(temp_buf);
++		return -EFAULT;
++	}
++
++	encrypt_decrypt(temp_buf, total_count);
++
++	new_size = max_t(size_t, entry->size, pos + total_count);
++	char *new_data = krealloc(entry->data, new_size, GFP_KERNEL);
++	if (!new_data) {
++		kfree(temp_buf);
++		return -ENOMEM;
++	}
++
++	entry->data = new_data;
++	if (pos > entry->size)
++		memset(entry->data + entry->size, 0, pos - entry->size);
++	memcpy(entry->data + pos, temp_buf, total_count);
++	entry->size = new_size;
++
++	kfree(temp_buf);
++	iocb->ki_pos += total_count;
++
++	return total_count;
++}
++
++/*
++ * Open a file for given inode
++ */
++static int mem_fs_open(struct inode *inode, struct file *file)
++{
++	printk(KERN_INFO "mymemfs: mem_fs_open\n");
++	file->private_data = inode->i_private;
++	return 0;
++}
++
++/*
++ * change the file offset
++ */
++static loff_t mem_fs_llseek(struct file *file, loff_t offset, int whence)
++{
++	struct mem_fs_entry *entry = file->private_data;
++	loff_t new_pos;
++
++	printk(KERN_INFO "mymemfs: mem_fs_llseek\n");
++	if (!entry || entry->is_dir)
++		return -EINVAL;
++
++	switch (whence) {
++	case SEEK_SET:
++		new_pos = offset;
++		break;
++	case SEEK_CUR:
++		new_pos = file->f_pos + offset;
++		break;
++	case SEEK_END:
++		new_pos = entry->size + offset;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	if (new_pos < 0)
++		return -EINVAL;
++
++	file->f_pos = new_pos;
++	return new_pos;
++}
++
++
++/*
++ * This is called by VFS
++ * Userspace: readdir("/mnt/myfs/mydir") -> sys_getdents
++ * Kernel VFS: vfs_readdir → file->f_op->iterate_shared(file, ctx).
++ */
++static int mem_fs_iterate_shared(struct file *file, struct dir_context *ctx)
++{
++	struct mem_fs_entry *dir = file->private_data;
++	struct mem_fs_entry *entry;
++	int pos = ctx->pos;
++
++	printk(KERN_INFO "mymemfs: mem_fs_iterate_shared\n");
++	if (!dir || !dir->is_dir)
++		return -ENOTDIR;
++
++
++
++	if (pos == 0) {
++		if (!dir_emit_dots(file, ctx))
++			return 0;
++		pos = 2;
++	}
++	/*
++	   if (pos == 0) {
++	   if (!dir_emit(ctx, ".", 1, S_IFDIR, DT_DIR)) {
++	   printk(KERN_INFO "mymemfs: Failed to emit '.'\n");
++	   return 0;
++	   }
++	   ctx->pos++;
++	   return 0;
++	   }
++
++	   if (pos==1) {
++	   if (!dir_emit(ctx, "..", 2, S_IFDIR, DT_DIR)) {
++	   printk(KERN_INFO "mymemfs: Failed to emit '..'\n");
++	   return 0;
++	   }
++	   ctx->pos++;
++	   }
++
++	// XXX: ADD in commit, because we have to adjust the position!
++	pos = ctx->pos - 2;
++	*/
++
++	/* It is reading one entry at a time  which is at pos*/
++	list_for_each_entry(entry, &dir->children, list) {
++		if (pos > 0) {
++			pos--;
++			continue;
++		}
++		if (!dir_emit(ctx, entry->name, strlen(entry->name),
++			      entry->is_dir ? S_IFDIR : S_IFREG,
++			      entry->is_dir ? DT_DIR : DT_REG)) {
++			printk(KERN_INFO "mymemfs: Failed to emit '%s'\n", entry->name);
++			break;
++		}
++		ctx->pos++;
++		pos++;
++	}
++
++	return 0;
++}
++
++/*
++ * VFS calls it : YES
++ *
++ * How the file read happens:
++ *	open a directory
++ *	read the direntries
++ *		{diname, inode number}
++ *	get do the lookup the direntry
++ *	   to populate the in memory inode.
++ *	   which will be used for futher file ops
++ */
++static struct dentry *mem_fs_lookup(struct inode *dir,
++				    struct dentry *dentry,
++				    unsigned int flags)
++{
++	struct mem_fs_entry *dir_entry = dir->i_private;
++	struct mem_fs_entry *entry;
++	struct inode *inode = NULL;
++
++	printk(KERN_INFO "mymemfs: mem_fs_lookup for %s\n", dentry->d_name.name);
++
++	/*
++	 * "." direntry should points to the dir itself
++	 */
++	if (!strcmp(dentry->d_name.name, ".")) {
++		inode = dir;  // Return the current directory inode
++		ihold(inode); // Increment reference count
++		d_add(dentry, inode);
++		return NULL;
++	}
++
++	/*
++	 * ".." direntry should points to the parent dir.
++	 * except the superblock (root) where it will point
++	 * to itself.
++	 */
++	if (!strcmp(dentry->d_name.name, "..")) {
++		if (dir_entry->parent) {
++			/*
++			   inode = mem_fs_get_inode(dir->d_parent->d_inode);
++			   */
++
++			/*
++			 *
++			 * We are creating new inodes from the superblock
++			 * And they are having same direntry as the parent.
++			 *
++			 * We should not do that because here 2 inodes are having same data
++			 * but atleast inode is different which breaks the rule of seeing
++			 * the same inode value, from both the place
++			 *
++			 * ALso its waste of resources
++			 */
++			// Get the parent inode from the parent's mem_fs_entry
++			inode = mem_fs_get_inode(dir->i_sb, S_IFDIR);
++			if (!inode)
++				return ERR_PTR(-ENOMEM);
++			inode->i_private = dir_entry->parent;
++		} else {
++			// If no parent (root), return self
++			inode = dir;
++			ihold(inode);
++		}
++		d_add(dentry, inode);
++		return NULL;
++	}
++
++	/* Lookup regular children */
++	list_for_each_entry(entry, &dir_entry->children, list) {
++		if (!strcmp(entry->name, dentry->d_name.name)) {
++			inode = mem_fs_get_inode(dir->i_sb,
++						 entry->is_dir ? S_IFDIR
++						 : S_IFREG);
++			if (!inode)
++				return ERR_PTR(-ENOMEM);
++			inode->i_private = entry;
++			d_add(dentry, inode);
++			return NULL;
++		}
++	}
++
++	d_add(dentry, NULL); // Not found
++	return NULL;
++}
++
++
++/*
++ * Fill an new File in the given dir (inode)
++ *
++ * We have to allocate coresponding inode for direntry
++ * We have to allocate correspoding fs_entry in our mem_fs
++ *
++ * idmap unused
++ */
++static int mem_fs_create(struct mnt_idmap *idmap,
++			 struct inode *dir,
++			 struct dentry *dentry,
++			 umode_t mode,
++			 bool excl)
++{
++	struct mem_fs_entry *dir_entry = dir->i_private;
++	struct mem_fs_entry *entry;
++	struct inode *inode;
++
++	printk(KERN_INFO "mymemfs: mem_fs_create for %s\n",
++	       dentry->d_name.name);
++
++	entry = mem_fs_new_entry(dentry->d_name.name, false);
++	if (!entry)
++		return -ENOMEM;
++
++	entry->parent = dir_entry;
++	list_add(&entry->list, &dir_entry->children);
++
++	inode = mem_fs_get_inode(dir->i_sb, S_IFREG | mode);
++	if (!inode) {
++		list_del(&entry->list);
++		kfree(entry->name);
++		kfree(entry);
++		return -ENOMEM;
++	}
++
++	inode->i_private = entry;
++	d_instantiate(dentry, inode);
++	return 0;
++}
++
++/*
++ * Exactly same as mem_fs_create, but it creates DIR
++ */
++static int mem_fs_mkdir(struct mnt_idmap *idmap,
++			struct inode *dir,
++			struct dentry *dentry,
++			umode_t mode)
++{
++	struct mem_fs_entry *dir_entry = dir->i_private;
++	struct mem_fs_entry *entry;
++	struct inode *inode;
++
++	printk(KERN_INFO "mymemfs: mem_fs_mkdir for %s\n",
++	       dentry->d_name.name);
++
++	entry = mem_fs_new_entry(dentry->d_name.name, true);
++	if (!entry)
++		return -ENOMEM;
++
++	entry->parent = dir_entry;
++	list_add(&entry->list, &dir_entry->children);
++
++	inode = mem_fs_get_inode(dir->i_sb, S_IFDIR | mode);
++	if (!inode) {
++		list_del(&entry->list);
++		kfree(entry->name);
++		kfree(entry);
++		return -ENOMEM;
++	}
++
++	inode->i_private = entry;
++	d_instantiate(dentry, inode);
++	return 0;
++}
++
++/*
++ * VFS calls it : NO
++ * We are just creating new node for our mem_fs tree!
++ */
++static struct mem_fs_entry *mem_fs_new_entry(const char *name, bool is_dir)
++{
++	struct mem_fs_entry *entry = kmalloc(sizeof(*entry), GFP_KERNEL);
++	if (!entry) return NULL;
++
++	printk(KERN_INFO "mymemfs: mem_fs_new_entry for %s\n", name);
++	entry->name = kstrdup(name, GFP_KERNEL);
++	if (!entry->name) {
++		kfree(entry);
++		return NULL;
++	}
++	entry->data = NULL;
++	entry->size = 0;
++	entry->is_dir = is_dir;
++	entry->parent = NULL;
++	INIT_LIST_HEAD(&entry->list);
++	if (is_dir)
++		INIT_LIST_HEAD(&entry->children);
++	return entry;
++}
++
++/*
++ *
++ * TODO: Implement it!
++ */
++static int mem_fs_setattr(struct mnt_idmap *, struct dentry *, struct iattr *) {
++	printk(KERN_INFO "mymemfs: mem_fs_setattr NOT_SUPPORTED\n");
++	return 0;
++}
++
++/*
++ *
++ * TODO: Implement it!
++ *
++ * XXX: ls will not work without it.
++ */
++static int mem_fs_getattr(struct mnt_idmap *, const struct path *,
++			  struct kstat *, u32, unsigned int) {
++	printk(KERN_INFO "mymemfs: mem_fs_getattr NOT_SUPPORTED\n");
++	return 0;
++}
++
++/*
++ *
++ * TODO: Implement it!
++ */
++static int mem_fs_rename (struct mnt_idmap *, struct inode *, struct dentry *,
++			  struct inode *, struct dentry *, unsigned int){
++	printk(KERN_INFO "mymemfs: mem_fs_rename NOT_SUPPORTED\n");
++	return 0;
++}
++
++/*
++ *
++ * TODO: Implement it!
++ */
++static int mem_fs_fileattr_set(struct mnt_idmap *idmap,
++			       struct dentry *dentry, struct fileattr *fa) {
++	printk(KERN_INFO "mymemfs: mem_fs_fileattr_set NOT_SUPPORTED\n");
++	return 0;
++}
++
++/*
++ *
++ * TODO: Implement it!
++ */
++static int mem_fs_fileattr_get(struct dentry *dentry, struct fileattr *fa) {
++	printk(KERN_INFO "mymemfs: mem_fs_fileattr_get NOT_SUPPORTED\n");
++	return 0;
++}
++
++/*
++ *
++ * TODO: Implement it!
++ */
++static int mem_fs_readlink (struct dentry *, char __user *,int) {
++	printk(KERN_INFO "mymemfs: mem_fs_readlink NOT_SUPPORTED\n");
++	return 0;
++}
++
++/*
++ *
++ * TODO: Implement it!
++ */
++static int mem_fs_link (struct dentry *,struct inode *,struct dentry *) {
++	printk(KERN_INFO "mymemfs: mem_fs_link NOT_SUPPORTED\n");
++	return 0;
++}
++
++/*
++ *
++ * TODO: Implement it!
++ */
++static int mem_fs_symlink (struct mnt_idmap *, struct inode *,struct dentry *,
++			   const char *) {
++	printk(KERN_INFO "mymemfs: mem_fs_symlink NOT_SUPPORTED\n");
++	return 0;
++}
++
++/*
++ *
++ * TODO: Implement it!
++ */
++static int mem_fs_unlink (struct inode *,struct dentry *) {
++	printk(KERN_INFO "mymemfs: mem_fs_unlink NOT_SUPPORTED\n");
++	return 0;
++}
++
++/*
++ *
++ * TODO: Implement it!
++ */
++static int mem_fs_rmdir (struct inode *,struct dentry *) {
++	printk(KERN_INFO "mymemfs: mem_fs_rmdir NOT_SUPPORTED\n");
++	return 0;
++}
++
++/*
++ * VFS calls it : NO
++ *
++ * allocate an inode, and add it to list
++ * of inode of the in memory superblock
++ *
++ * TODO:
++ *	What if we dont put in the in mmeory list of superblock
++ *
++ */
++static struct inode *mem_fs_get_inode(struct super_block *sb, umode_t mode)
++{
++	struct inode *inode = new_inode(sb);
++	if (!inode)
++		return NULL;
++
++	printk(KERN_INFO "mymemfs: mem_fs_get_inode\n");
++	inode->i_mode = mode;
++	inode->i_uid = current_fsuid();
++	inode->i_gid = current_fsgid();
++	inode_set_atime_to_ts(inode, current_time(inode));
++	inode_set_mtime_to_ts(inode, current_time(inode));
++	inode_set_ctime_to_ts(inode, current_time(inode));
++	inode->i_ino = get_next_ino(); /* We use per-cpu local variable support for inode */
++
++	if (S_ISDIR(mode)) {
++		inode->i_op = &mem_fs_inode_ops;
++		inode->i_fop = &mem_fs_dir_ops;
++	} else if (S_ISREG(mode)) {
++		inode->i_op = &mem_fs_inode_ops;
++		inode->i_fop = &mem_fs_file_ops;
++	}
++
++	return inode;
++}
++
++/* TODO:
++ *	We should also free all the childrens
++ *	Or may be we should do lazy free (just mark them freed)
++ *
++ * TODO:
++ *	Test it!!!
++ *
++ *
++ * XXX: Findings
++ *	As we dont support the rmdir and unlink
++ *	vfs calls this mem_fs_drop inode.
++ *	And it is getting called recursivly.
++ *	So drop will always happen to only leafs.
++ */
++static int mem_fs_drop_inode(struct inode *inode)
++{
++	struct mem_fs_entry *entry = inode->i_private;
++
++	if (entry) {
++		printk(KERN_INFO "mymemfs: mem_fs_drop_inode: %s\n", entry->name);
++		if (entry->data)
++			kfree(entry->data);
++		kfree(entry->name);
++		list_del(&entry->list);
++		kfree(entry);
++	}
++	return 0;  // Indicate inode should be dropped
++}
++
++/*
++ * During the mount this will be called
++ *
++ * Fill the super block, we have to 2 things
++ *	create an inode for our root
++ *	create hook the mem_fs_info/root in sb->s_fs_info
++ *	fill the superblock ops
++ */
++static int mem_fs_fill_super(struct super_block *sb, void *data, int silent)
++{
++	struct mem_fs_sb *sb_info;
++	struct inode *root_inode;
++	struct mem_fs_entry *root_entry;
++
++	printk(KERN_INFO "mymemfs: mem_fs_fill_super\n");
++
++	sb->s_op = &mem_fs_super_ops;
++	sb->s_blocksize = PAGE_SIZE;
++	sb->s_blocksize_bits = PAGE_SHIFT;
++	sb->s_magic = 0x12345678;
++
++	sb_info = kzalloc(sizeof(*sb_info), GFP_KERNEL);
++	if (!sb_info)
++		return -ENOMEM;
++	sb->s_fs_info = sb_info;
++
++	root_entry = mem_fs_new_entry("/", true);
++	if (!root_entry) {
++		kfree(sb_info);
++		return -ENOMEM;
++	}
++	sb_info->root = root_entry;
++
++	root_inode = mem_fs_get_inode(sb, S_IFDIR | 0755);
++	if (!root_inode) {
++		kfree(root_entry->name);
++		kfree(root_entry);
++		kfree(sb_info);
++		return -ENOMEM;
++	}
++
++	root_inode->i_private = root_entry;
++	sb->s_root = d_make_root(root_inode); /* TODO: Why root dentry is special */
++	if (!sb->s_root) {
++		iput(root_inode);
++		kfree(root_entry->name);
++		kfree(root_entry);
++		kfree(sb_info);
++		return -ENOMEM;
++	}
++
++	return 0;
++}
++
++/*
++ * We provide the pointer to "mem_fs_fill_super"
++ */
++static struct dentry *mem_fs_mount(struct file_system_type *fs_type, int flags,
++				   const char *dev_name, void *data)
++{
++	printk(KERN_INFO "mymemfs: mem_fs_mount\n");
++	return mount_nodev(fs_type, flags, data, mem_fs_fill_super);
++}
++
++/*
++ * We provide pointer the mem_fs_mount during regsitering the file system!!
++ */
++static struct file_system_type mem_fs_type = {
++	.owner      = THIS_MODULE,
++	.name       = FS_NAME,
++	.mount      = mem_fs_mount,
++	.kill_sb    = kill_litter_super,
++	.fs_flags   = FS_USERNS_MOUNT,
++};
++
++static int __init mem_fs_init(void)
++{
++	printk(KERN_INFO "mymemfs: mem_fs_init\n");
++	return register_filesystem(&mem_fs_type);
++}
++
++static void __exit mem_fs_exit(void)
++{
++	printk(KERN_INFO "mymemfs: mem_fs_exit\n");
++	unregister_filesystem(&mem_fs_type);
++}
++
++module_init(mem_fs_init);
++module_exit(mem_fs_exit);
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Your Name");
++MODULE_DESCRIPTION("Custom encrypted in-memory filesystem");
+-- 
+2.43.0
+
