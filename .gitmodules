@@ -4,3 +4,6 @@
 [submodule "qemu-8.2.9"]
 	path = qemu-8.2.9
 	url = https://github.com/sagsango/qemu-8.2.9.git
+[submodule "kmods"]
+	path = kmods
+	url = https://github.com/sagsango/kmods.git
