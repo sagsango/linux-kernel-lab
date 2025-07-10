@@ -7,3 +7,6 @@
 [submodule "kmods"]
 	path = kmods
 	url = https://github.com/sagsango/kmods.git
+[submodule "cs561-examples"]
+	path = cs561-examples
+	url = https://github.com/sagsango/cs561-examples.git
