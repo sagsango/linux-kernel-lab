@@ -7,8 +7,9 @@ KNL_SRC=/home/sagar/groot/kernel/linux-kernel-lab/linux     # TODO: Change with 
 BZIMAGE=${KNL_SRC}/arch/x86/boot/bzImage
 CMDLINE="nokaslr console=ttyS0 root=/dev/sda1 rw debug"
 
+# XXX: Adding empty cdrom does not work why?
+#-drive file=my_cdrom.iso,media=cdrom,format=raw,readonly=on \
 UBUNTU_IMG=noble-server-cloudimg-amd64.img
-
 sudo ${QEMU_BIN} \
     -s \
     -nographic \
