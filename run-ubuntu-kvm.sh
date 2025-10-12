@@ -16,6 +16,7 @@ sudo ${QEMU_BIN} \
     -nic user,host=10.0.2.10,hostfwd=tcp:127.0.0.1:2200-:22 \
     -net nic,model=e1000 \
     -drive file=${UBUNTU_IMG},format=qcow2 \
+    -enable-kvm \
     -kernel ${BZIMAGE} \
     -append "${CMDLINE}"
 

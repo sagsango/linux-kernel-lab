@@ -16,6 +16,18 @@ sudo ${QEMU_BIN} \
     -nic user,host=10.0.2.10,hostfwd=tcp:127.0.0.1:2200-:22 \
     -net nic,model=e1000 \
     -drive file=${UBUNTU_IMG},format=qcow2 \
+    -enable-kvm \
     -kernel ${BZIMAGE} \
-    -append "${CMDLINE}"
+    -append "${CMDLINE}" \
+    -serial chardev:s0 \
+    -chardev stdio,id=s0,mux=on,logfile=qemu-s0.log,signal=off \
+    -D qemu-debug.log \
+    -d exec,int,guest_errors,mmu,unimp,plugin,strace,page \
+    -monitor unix:qemu-monitor.sock,server,nowait \
+    -S
 
+  
+
+
+
+   
