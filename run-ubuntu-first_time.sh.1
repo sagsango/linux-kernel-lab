@@ -1,0 +1,24 @@
+#
+#
+# When password does not work; do 5 next steps:
+# 1. Create new img
+wget https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img -O noble-server-cloudimg-amd64.img.org
+mv noble-server-cloudimg-amd64.img.org noble-server-cloudimg-amd64.img
+# or
+
+#
+# 2. create user-data
+cp user-data.first_time user-data
+#
+# 3. create : cloud-init.iso 
+genisoimage -output cloud-init.iso -volid cidata -joliet -rock user-data meta-data
+#
+# 4. resize the kernel image 
+qemu-img resize noble-server-cloudimg-amd64.img +4G
+#
+# 5. run the qemu & do $ sudo poweroff to same metadata
+qemu-system-x86_64 \
+    -smp 2 -m 2G -nographic \
+    -hda ./noble-server-cloudimg-amd64.img \
+    -device e1000,netdev=net0 -netdev user,id=net0,hostfwd=tcp::2200-:22 \
+    -cdrom ./cloud-init.iso
