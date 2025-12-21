@@ -1,0 +1,69 @@
+(qemu) help info
+help info
+info balloon  -- show balloon information
+info block [-n] [-v] [device] -- show info of one block device or all block devices (-n: show named nodes; -v: show details)
+info block-jobs  -- show progress of ongoing block device operations
+info blockstats  -- show block device statistics
+info capture  -- show capture information
+info chardev  -- show the character devices
+info cpus  -- show infos for each CPU
+info cryptodev  -- show the crypto devices
+info dirty_rate  -- show dirty rate information
+info dump  -- Display the latest dump status
+info history  -- show the command line history
+info hotpluggable-cpus  -- Show information about hotpluggable CPUs
+info iothreads  -- show iothreads
+info irq  -- show the interrupts statistics (if available)
+info jit  -- show dynamic compiler info
+info kvm  -- show KVM information
+info lapic [apic-id] -- show local apic state (apic-id: local apic to read, default is which of current CPU)
+info mem  -- show the active virtual memory mappings
+info memdev  -- show memory backends
+info memory-devices  -- show memory devices
+info memory_size_summary  -- show the amount of initially allocated and present hotpluggable (if enabled) memory in bytes.
+info mice  -- show which guest mouse is receiving events
+info migrate  -- show migration status
+info migrate_capabilities  -- show current migration capabilities
+info migrate_parameters  -- show current migration parameters
+info mtree [-f][-d][-o][-D] -- show memory tree (-f: dump flat view for address spaces;-d: dump dispatch tree, valid with -f only);-o: dump region owners/parents;-D: dump disabled regions
+info name  -- show the current VM name
+info network  -- show the network state
+info numa  -- show NUMA information
+info opcount  -- show dynamic compiler opcode counters
+info pci  -- show PCI info
+info pic  -- show PIC state
+info qdm  -- show qdev device model list
+info qom-tree [path] -- show QOM composition tree
+info qtree  -- show device tree
+info ramblock  -- Display system ramblock information
+info rdma  -- show RDMA state
+info registers [-a|vcpu] -- show the cpu registers (-a: show register info for all cpus; vcpu: specific vCPU to query; show the current CPU's registers if no argument is specified)
+info replay  -- show record/replay information
+info rocker name -- Show rocker switch
+info rocker-of-dpa-flows name [tbl_id] -- Show rocker OF-DPA flow tables
+info rocker-of-dpa-groups name [type] -- Show rocker OF-DPA groups
+info rocker-ports name -- Show rocker ports
+info roms  -- show roms
+info sev  -- show SEV information
+info sgx  -- show intel SGX information
+info snapshots  -- show the currently saved VM snapshots
+info spice  -- show the spice server status
+info stats target [names] [provider] -- show statistics for the given target (vm or vcpu); optionally filter byname (comma-separated list, or * for all) and provider
+info status  -- show the current VM status (running|paused)
+info sync-profile [-m] [-n] [max] -- show synchronization profiling info, up to max entries (default: 10), sorted by total wait time. (-m: sort by mean wait time; -n: do not coalesce objects with the same call site)
+info tlb  -- show virtual to physical memory mappings
+info tpm  -- show the TPM device
+info trace-events [name] [vcpu] -- show available trace-events & their state (name: event name pattern; vcpu: vCPU to query, default is any)
+info usb  -- show guest USB devices
+info usbhost  -- show host USB devices
+info usernet  -- show user network stack connection states
+info uuid  -- show the current VM UUID
+info vcpu_dirty_limit  -- show dirty page limit information of all vCPU
+info version  -- show the version of QEMU
+info virtio  -- List all available virtio devices
+info virtio-queue-element path queue [index] -- Display element of a given virtio queue
+info virtio-queue-status path queue -- Display status of a given virtio queue
+info virtio-status path -- Display status of a given virtio device
+info virtio-vhost-queue-status path queue -- Display status of a given vhost queue
+info vm-generation-id  -- Show Virtual Machine Generation ID
+info vnc  -- show the vnc server status

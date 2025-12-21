@@ -1,0 +1,251 @@
+root@ubuntu-lkp:~# lshw
+ubuntu-lkp
+    description: Computer
+    product: Ubuntu 24.04 PC (i440FX + PIIX, 1996)
+    vendor: QEMU
+    version: pc-i440fx-noble
+    width: 64 bits
+    capabilities: smbios-3.0.0 dmi-3.0.0 smp vsyscall32
+    configuration: boot=normal
+  *-core
+       description: Motherboard
+       physical id: 0
+     *-firmware
+          description: BIOS
+          vendor: SeaBIOS
+          physical id: 0
+          version: 1.16.3-debian-1.16.3-2
+          date: 04/01/2014
+          size: 96KiB
+     *-cpu
+          description: CPU
+          product: QEMU Virtual CPU version 2.5+
+          vendor: Intel Corp.
+          physical id: 400
+          bus info: cpu@0
+          version: 15.107.1
+          slot: CPU 0
+          size: 2GHz
+          capacity: 2GHz
+          width: 64 bits
+          capabilities: fpu fpu_exception wp de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx x86-64 constant_tsc nopl xtopology cpuid tsc_known_fi
+          configuration: cores=2 enabledcores=2 microcode=1 threads=2
+     *-memory
+          description: System Memory
+          physical id: 1000
+          size: 2GiB
+          capacity: 2GiB
+          capabilities: ecc
+          configuration: errordetection=multi-bit-ecc
+        *-bank
+             description: DIMM RAM
+             vendor: QEMU
+             physical id: 0
+             slot: DIMM 0
+             size: 2GiB
+     *-pci
+          description: Host bridge
+          product: 440FX - 82441FX PMC [Natoma]
+          vendor: Intel Corporation
+          physical id: 100
+          bus info: pci@0000:00:00.0
+          version: 02
+          width: 32 bits
+          clock: 33MHz
+        *-isa
+             description: ISA bridge
+             product: 82371SB PIIX3 ISA [Natoma/Triton II]
+             vendor: Intel Corporation
+             physical id: 1
+             bus info: pci@0000:00:01.0
+             version: 00
+             width: 32 bits
+             clock: 33MHz
+             capabilities: isa
+             configuration: latency=0
+           *-pnp00:00
+                product: PnP device PNP0303
+                physical id: 0
+                capabilities: pnp
+                configuration: driver=i8042 kbd
+           *-pnp00:01
+                product: PnP device PNP0f13
+                physical id: 1
+                capabilities: pnp
+                configuration: driver=i8042 aux
+           *-pnp00:02
+                product: PnP device PNP0700
+                physical id: 2
+                capabilities: pnp
+           *-pnp00:03
+                product: PnP device PNP0400
+                physical id: 3
+                capabilities: pnp
+           *-pnp00:04
+                product: PnP device PNP0501
+                physical id: 4
+                capabilities: pnp
+                configuration: driver=serial
+           *-pnp00:05
+                product: PnP device PNP0b00
+                physical id: 5
+                capabilities: pnp
+                configuration: driver=rtc_cmos
+        *-ide
+             description: IDE interface
+             product: 82371SB PIIX3 IDE [Natoma/Triton II]
+             vendor: Intel Corporation
+             physical id: 1.1
+             bus info: pci@0000:00:01.1
+             logical name: scsi0
+             logical name: scsi1
+             version: 00
+             width: 32 bits
+             clock: 33MHz
+             capabilities: ide isa_compat_mode bus_master emulated
+             configuration: driver=ata_piix latency=0
+             resources: irq:0 ioport:1f0(size=8) ioport:3f6 ioport:170(size=8) ioport:376 ioport:c080(size=16)
+           *-disk
+                description: ATA Disk
+                product: QEMU HARDDISK
+                physical id: 0
+                bus info: scsi@0:0.0.0
+                logical name: /dev/sda
+                version: 2.5+
+                serial: QM00001
+                size: 7680MiB (8053MB)
+                capabilities: gpt-1.00 partitioned partitioned:gpt
+                configuration: ansiversion=5 guid=55c86706-fc33-4bbf-85f2-1a55a388b83f logicalsectorsize=512 sectorsize=512
+              *-volume:0
+                   description: EXT4 volume
+                   vendor: Linux
+                   physical id: 1
+                   bus info: scsi@0:0.0.0,1
+                   logical name: /dev/sda1
+                   version: 1.0
+                   serial: e4cd6da8-09cb-4378-9577-e2053726667f
+                   size: 6654MiB
+                   capacity: 6654MiB
+                   capabilities: journaled extended_attributes large_files huge_files dir_nlink recover 64bit extents ext4 ext2 initialized
+                   configuration: created=2025-07-04 12:55:22 filesystem=ext4 label=cloudimg-rootfs lastmountpoint=/ modified=2025-12-21 18:31:21 mounted=2025-12-21 11:29:04 state=clean
+              *-volume:1
+                   description: BIOS Boot partition
+                   vendor: EFI
+                   physical id: e
+                   bus info: scsi@0:0.0.0,14
+                   logical name: /dev/sda14
+                   serial: b5e9dedf-d26e-460d-9c15-c7f421c90f53
+                   capacity: 4095KiB
+                   capabilities: nofs
+              *-volume:2
+                   description: Windows FAT volume
+                   vendor: mkfs.fat
+                   physical id: f
+                   bus info: scsi@0:0.0.0,15
+                   logical name: /dev/sda15
+                   logical name: /boot/efi
+                   version: FAT32
+                   serial: f506-e28f
+                   size: 100MiB
+                   capacity: 105MiB
+                   capabilities: boot fat initialized
+                   configuration: FATs=2 filesystem=fat label=UEFI mount.fstype=vfat mount.options=rw,relatime,fmask=0077,dmask=0077,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro sd
+              *-volume:3
+                   description: EXT4 volume
+                   vendor: Linux
+                   physical id: 10
+                   bus info: scsi@0:0.0.0,16
+                   logical name: /dev/sda16
+                   logical name: /boot
+                   version: 1.0
+                   serial: 0f17be16-9bf7-4334-89c1-ecce68e57a4e
+                   size: 913MiB
+                   capacity: 913MiB
+                   capabilities: journaled extended_attributes large_files huge_files dir_nlink recover 64bit extents ext4 ext2 initialized
+                   configuration: created=2025-07-04 12:55:44 filesystem=ext4 label=BOOT lastmountpoint=/boot modified=2025-12-21 11:29:06 mount.fstype=ext4 mount.options=rw,relatime mounted=2025-12-21d
+           *-cdrom
+                description: DVD reader
+                product: QEMU DVD-ROM
+                vendor: QEMU
+                physical id: 1
+                bus info: scsi@1:0.0.0
+                logical name: /dev/cdrom
+                logical name: /dev/sr0
+                version: 2.5+
+                capabilities: removable audio dvd
+                configuration: ansiversion=5 status=nodisc
+        *-bridge UNCLAIMED
+             description: Bridge
+             product: 82371AB/EB/MB PIIX4 ACPI
+             vendor: Intel Corporation
+             physical id: 1.3
+             bus info: pci@0000:00:01.3
+             version: 03
+             width: 32 bits
+             clock: 33MHz
+             capabilities: bridge
+             configuration: latency=0
+        *-display UNCLAIMED
+             description: VGA compatible controller
+             physical id: 2
+             bus info: pci@0000:00:02.0
+             version: 02
+             width: 32 bits
+             clock: 33MHz
+             capabilities: vga_controller
+             configuration: latency=0
+             resources: memory:fd000000-fdffffff memory:febd0000-febd0fff memory:c0000-dffff
+        *-network:0
+             description: Ethernet interface
+             product: 82540EM Gigabit Ethernet Controller
+             vendor: Intel Corporation
+             physical id: 3
+             bus info: pci@0000:00:03.0
+             logical name: ens3
+             version: 03
+             serial: 52:54:00:12:34:56
+             size: 1Gbit/s
+             capacity: 1Gbit/s
+             width: 32 bits
+             clock: 33MHz
+             capabilities: bus_master rom ethernet physical tp 10bt 10bt-fd 100bt 100bt-fd 1000bt-fd autonegotiation
+             configuration: autonegotiation=on broadcast=yes driver=e1000 driverversion=6.8.0-00010-ga25ab8b73ee2 duplex=full ip=10.0.2.15 latency=0 link=yes multicast=yes port=twisted pair speed=1Gbits
+             resources: irq:11 memory:feb80000-feb9ffff ioport:c000(size=64) memory:fea80000-feafffff
+        *-network:1 DISABLED
+             description: Ethernet interface
+             product: 82540EM Gigabit Ethernet Controller
+             vendor: Intel Corporation
+             physical id: 4
+             bus info: pci@0000:00:04.0
+             logical name: enp0s4
+             version: 03
+             serial: 52:54:00:12:34:57
+             size: 1Gbit/s
+             capacity: 1Gbit/s
+             width: 32 bits
+             clock: 33MHz
+             capabilities: bus_master rom ethernet physical tp 10bt 10bt-fd 100bt 100bt-fd 1000bt-fd autonegotiation
+             configuration: autonegotiation=on broadcast=yes driver=e1000 driverversion=6.8.0-00010-ga25ab8b73ee2 duplex=full latency=0 link=no multicast=yes port=twisted pair speed=1Gbit/s
+             resources: irq:10 memory:feba0000-febbffff ioport:c040(size=64) memory:feb00000-feb7ffff
+  *-input:0
+       product: Power Button
+       physical id: 1
+       logical name: input0
+       logical name: /dev/input/event0
+       capabilities: platform
+  *-input:1
+       product: AT Translated Set 2 keyboard
+       physical id: 2
+       logical name: input1
+       logical name: /dev/input/event1
+       logical name: input1::capslock
+       logical name: input1::numlock
+       logical name: input1::scrolllock
+       capabilities: i8042
+  *-input:2
+       product: ImExPS/2 Generic Explorer Mouse
+       physical id: 3
+       logical name: input3
+       logical name: /dev/input/event2
+       capabilities: i8042
+root@ubuntu-lkp:~#

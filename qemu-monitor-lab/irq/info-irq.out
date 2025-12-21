@@ -1,0 +1,48 @@
+# IRQ N has been injected into the guest N times via the IOAPIC
+# info irq prints per-IRQ delivery counters for the interrupt controllers that QEMU/KVM emulates.
+(qemu) info irq
+info irq
+IRQ statistics for kvm-ioapic:
+ 0: 153
+ 1: 11
+ 4: 21689
+ 8: 1
+11: 27162
+12: 125
+14: 9130
+15: 2386
+IRQ statistics for kvm-i8259:
+ 0: 153
+ 1: 11
+ 4: 21689
+ 8: 1
+11: 27162
+12: 125
+14: 9130
+15: 2386
+
+
+
+
+
+# NOTE:
+Why you see both kvm-ioapic and kvm-i8259
+Because x86 supports two interrupt routing models:
+Legacy PIC (8259)
+      |
+      +--> cascaded to
+            |
+            v
+        IOAPIC
+
+Early boot
+    Linux starts in PIC mode
+    IRQs go via 8259
+Later
+    Linux switches to IOAPIC
+    IRQs go via IOAPIC redirection table
+    QEMU keeps both counters so you can see:
+    Legacy compatibility behavior
+    Modern interrupt routing
+
+Same IRQ numbers appear because they represent the same logical lines, just through different controllers.

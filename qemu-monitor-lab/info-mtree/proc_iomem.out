@@ -1,0 +1,104 @@
+root@ubuntu-lkp:~# cat /proc/iomem
+00000000-00000fff : Reserved
+00001000-0009fbff : System RAM
+0009fc00-0009ffff : Reserved
+000a0000-000bffff : PCI Bus 0000:00
+000c0000-000c99ff : Video ROM
+000ca000-000cadff : Adapter ROM
+000cb000-000cbdff : Adapter ROM
+000cc000-000cc5ff : Adapter ROM
+000cc800-000cebff : Adapter ROM
+000f0000-000fffff : Reserved
+  000f0000-000fffff : System ROM
+00100000-7ffdffff : System RAM
+  01000000-021fffff : Kernel code
+  02200000-02876fff : Kernel rodata
+  02a00000-02caeeff : Kernel data
+  0349b000-035fffff : Kernel bss
+7ffe0000-7fffffff : Reserved
+80000000-febfffff : PCI Bus 0000:00
+  fd000000-fdffffff : 0000:00:02.0
+  fea80000-feafffff : 0000:00:03.0
+  feb00000-feb7ffff : 0000:00:04.0
+  feb80000-feb9ffff : 0000:00:03.0
+    feb80000-feb9ffff : e1000
+  feba0000-febbffff : 0000:00:04.0
+    feba0000-febbffff : e1000
+  febd0000-febd0fff : 0000:00:02.0
+fec00000-fec003ff : IOAPIC 0
+fed00000-fed003ff : HPET 0
+  fed00000-fed003ff : PNP0103:00
+feffc000-feffffff : Reserved
+fffc0000-ffffffff : Reserved
+100000000-17fffffff : PCI Bus 0000:00
+root@ubuntu-lkp:~#
+
+
+root@ubuntu-lkp:~# lspci -vvv -s 00:02.0
+00:02.0 VGA compatible controller: Device 1234:1111 (rev 02) (prog-if 00 [VGA controller])
+	Subsystem: Red Hat, Inc. Device 1100
+	Control: I/O+ Mem+ BusMaster- SpecCycle- MemWINV- VGASnoop- ParErr- Stepping- SERR+ FastB2B- DisINTx-
+	Status: Cap- 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
+	Region 0: Memory at fd000000 (32-bit, prefetchable) [size=16M]
+	Region 2: Memory at febd0000 (32-bit, non-prefetchable) [size=4K]
+	Expansion ROM at 000c0000 [disabled] [size=128K]
+lspci: Unable to load libkmod resources: error -2
+
+root@ubuntu-lkp:~#
+
+root@ubuntu-lkp:~# cat /sys/bus/pci/devices/0000:00:02.0/resource
+0x00000000fd000000 0x00000000fdffffff 0x0000000000042208
+0x0000000000000000 0x0000000000000000 0x0000000000000000
+0x00000000febd0000 0x00000000febd0fff 0x0000000000040200
+0x0000000000000000 0x0000000000000000 0x0000000000000000
+0x0000000000000000 0x0000000000000000 0x0000000000000000
+0x0000000000000000 0x0000000000000000 0x0000000000000000
+0x00000000000c0000 0x00000000000dffff 0x0000000000000212
+root@ubuntu-lkp:~#
+
+
+root@ubuntu-lkp:~# ls /sys/devices/
+LNXSYSTM:00  kprobe  pci0000:00  pnp0	   system      uprobe
+breakpoint   msr     platform	 software  tracepoint  virtual
+root@ubuntu-lkp:~# ls /sys/
+block  bus  class  dev	devices  firmware  fs  kernel  module  power
+root@ubuntu-lkp:~# ls /sys/devices
+LNXSYSTM:00  kprobe  pci0000:00  pnp0	   system      uprobe
+breakpoint   msr     platform	 software  tracepoint  virtual
+root@ubuntu-lkp:~# ls /sys/dev
+block  char
+root@ubuntu-lkp:~# ls /sys/devices/virtual/
+bdi    cpuid	dmi  memory_tiering  msr  ptp	 thermal  usbmon  vtconsole
+block  devlink	mem  misc	     net  sound  tty	  vc	  workqueue
+root@ubuntu-lkp:~# ls /sys/bus/
+acpi	     cpu	   machinecheck    node		platform     snd_seq
+auxiliary    event_source  mdio_bus	   nvmem	pnp	     usb
+clockevents  hdaudio	   mei		   pci		scsi	     virtio
+clocksource  hid	   memory_tiering  pci_express	serial-base  wmi
+container    i2c	   mipi-dsi	   pcmcia	serio	     workqueue
+root@ubuntu-lkp:~# ls /sys/bus/pci/
+devices/            drivers_probe       slots/
+drivers/            rescan              uevent
+drivers_autoprobe   resource_alignment
+root@ubuntu-lkp:~# ls /sys/bus/pci/devices/0000:00:02.0
+ari_enabled		  driver_override  numa_node	 revision
+boot_vga		  enable	   power	 rom
+broken_parity_status	  firmware_node    power_state	 subsystem
+class			  irq		   remove	 subsystem_device
+config			  link		   rescan	 subsystem_vendor
+consistent_dma_mask_bits  local_cpulist    resource	 uevent
+d3cold_allowed		  local_cpus	   resource0	 vendor
+device			  modalias	   resource0_wc  waiting_for_supplier
+dma_mask_bits		  msi_bus	   resource2
+root@ubuntu-lkp:~# ls /sys/bus/pci/devices/0000:00:02.0/resource
+/sys/bus/pci/devices/0000:00:02.0/resource
+root@ubuntu-lkp:~#
+root@ubuntu-lkp:~# cat /sys/bus/pci/devices/0000:00:02.0/resource
+0x00000000fd000000 0x00000000fdffffff 0x0000000000042208
+0x0000000000000000 0x0000000000000000 0x0000000000000000
+0x00000000febd0000 0x00000000febd0fff 0x0000000000040200
+0x0000000000000000 0x0000000000000000 0x0000000000000000
+0x0000000000000000 0x0000000000000000 0x0000000000000000
+0x0000000000000000 0x0000000000000000 0x0000000000000000
+0x00000000000c0000 0x00000000000dffff 0x0000000000000212
+root@ubuntu-lkp:~#
