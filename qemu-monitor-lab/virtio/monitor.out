@@ -1,0 +1,120 @@
+virsh # list
+ Id   Name                                   State
+------------------------------------------------------
+ 3    NTNX-jubilee03-2-CVM                   running
+ 4    721780a1-253f-404f-79d7-e1dfb5d56afd   running
+ 5    68526cfe-d418-496e-44f7-c58fab16eb5a   running
+
+virsh # qemu-monitor-command --domain 68526cfe-d418-496e-44f7-c58fab16eb5a --hmp --cmd "info virtio"
+/machine/peripheral/frodo-scsi0/virtio-backend [virtio-scsi]
+/machine/peripheral/balloon0/virtio-backend [virtio-balloon]
+
+
+virsh # qemu-monitor-command --domain 68526cfe-d418-496e-44f7-c58fab16eb5a --hmp --cmd "info tpm"
+TPM device:
+ tpm0: model=tpm-crb
+  \ tpm-tpm0: type=emulator,chardev=chrtpm
+
+
+virsh # qemu-monitor-command --domain 68526cfe-d418-496e-44f7-c58fab16eb5a --hmp --cmd "info status"
+VM status: running
+
+
+virsh # qemu-monitor-command --domain 68526cfe-d418-496e-44f7-c58fab16eb5a --hmp --cmd "info  virtio-status /machine/peripheral/balloon0/virtio-backend"
+/machine/peripheral/balloon0/virtio-backend:
+  device_name:             virtio-balloon
+  device_id:               5
+  vhost_started:           false
+  bus_name:                (null)
+  broken:                  false
+  disabled:                false
+  disable_legacy_check:    true
+  started:                 false
+  use_started:             false
+  start_on_kick:           false
+  use_guest_notifier_mask: true
+  vm_running:              true
+  num_vqs:                 3
+  queue_sel:               0
+  isr:                     0
+  endianness:              little
+  status:
+
+  Guest features:
+
+  Host features:
+	VIRTIO_RING_F_EVENT_IDX: Used & avail. event fields enabled,
+	VIRTIO_RING_F_INDIRECT_DESC: Indirect descriptors supported,
+	VIRTIO_F_VERSION_1: Device compliant for v1 spec (legacy),
+	VIRTIO_F_ANY_LAYOUT: Device accepts arbitrary desc. layouts,
+	VIRTIO_F_NOTIFY_ON_EMPTY: Notify when device runs out of avail. descs. on VQ
+	VIRTIO_BALLOON_F_DEFLATE_ON_OOM: Deflate balloon when guest OOM,
+	VIRTIO_BALLOON_F_STATS_VQ: Guest memory stats VQ available
+  unknown-features(0x0000000040000000)
+  Backend features:
+
+
+
+virsh # qemu-monitor-command --domain 68526cfe-d418-496e-44f7-c58fab16eb5a --hmp --cmd "info  virtio-status /machine/peripheral/frodo-scsi0/virtio-backend"
+/machine/peripheral/frodo-scsi0/virtio-backend:
+  device_name:             virtio-scsi (vhost)
+  device_id:               8
+  vhost_started:           true
+  bus_name:                (null)
+  broken:                  false
+  disabled:                false
+  disable_legacy_check:    true
+  started:                 false
+  use_started:             false
+  start_on_kick:           false
+  use_guest_notifier_mask: true
+  vm_running:              true
+  num_vqs:                 3
+  queue_sel:               2
+  isr:                     1
+  endianness:              little
+  status:
+	VIRTIO_CONFIG_S_ACKNOWLEDGE: Valid virtio device found,
+	VIRTIO_CONFIG_S_DRIVER: Guest OS compatible with device,
+	VIRTIO_CONFIG_S_DRIVER_OK: Driver setup and ready
+  Guest features:
+
+  Host features:
+	VIRTIO_RING_F_INDIRECT_DESC: Indirect descriptors supported,
+	VIRTIO_F_VERSION_1: Device compliant for v1 spec (legacy),
+	VIRTIO_F_ANY_LAYOUT: Device accepts arbitrary desc. layouts
+	VHOST_USER_F_PROTOCOL_FEATURES: Vhost-user protocol features negotiation supported,
+	VIRTIO_SCSI_F_CHANGE: Reporting and handling LUN changes supported,
+	VIRTIO_SCSI_F_HOTPLUG: Reporting and handling hot-plug events supported
+  Backend features:
+
+  VHost:
+    nvqs:           3
+    vq_index:       0
+    max_queues:     256
+    n_mem_sections: 1
+    n_tmp_sections: 1
+    backend_cap:    0
+    log_enabled:    false
+    log_size:       0
+    Features:
+	VIRTIO_RING_F_INDIRECT_DESC: Indirect descriptors supported,
+	VIRTIO_F_VERSION_1: Device compliant for v1 spec (legacy)
+	VHOST_USER_F_PROTOCOL_FEATURES: Vhost-user protocol features negotiation supported,
+	VHOST_F_LOG_ALL: Logging write descriptors supported,
+	VIRTIO_SCSI_F_CHANGE: Reporting and handling LUN changes supported,
+	VIRTIO_SCSI_F_HOTPLUG: Reporting and handling hot-plug events supported
+    Acked features:
+
+    Backend features:
+
+	VHOST_USER_F_PROTOCOL_FEATURES: Vhost-user protocol features negotiation supported
+    Protocol features:
+	VHOST_USER_PROTOCOL_F_CONFIGURE_MEM_SLOTS: Configuration for memory slots supported,
+	VHOST_USER_PROTOCOL_F_RESET_DEVICE: Disabling all rings and resetting internal device state supported,
+	VHOST_USER_PROTOCOL_F_CROSS_ENDIAN: Endianness of VQs for legacy devices supported,
+	VHOST_USER_PROTOCOL_F_LOG_SHMFD: Shared log memory fd supported,
+	VHOST_USER_PROTOCOL_F_MQ: Multiqueue protocol supported
+
+
+virsh #
