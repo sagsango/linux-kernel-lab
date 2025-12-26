@@ -1,0 +1,33 @@
+virsh-xmls ❱❱❱ sudo ls /sys/kernel/debug/kvm/
+76194-11		            halt_successful_poll		    mmio_exits	            pf_emulate
+77108-12		            halt_wait_hist		            mmu_cache_miss          pf_fast
+77157-12		            halt_wait_ns			        mmu_flooded	            pf_fixed
+blocking		            halt_wakeup			            mmu_pde_zapped          pf_guest
+directed_yield_attempted    host_state_reload		        mmu_pte_write	        pf_mmio_spte_created
+directed_yield_successful   hypercalls			            mmu_recycled	        pf_spurious
+exits			            insn_emulation		            mmu_shadow_zapped       pf_taken
+fpu_reload		            insn_emulation_fail		        mmu_unsync	            preemption_other
+guest_mode		            invlpg			                nested_run	            preemption_reported
+halt_attempted_poll	        io_exits			            nmi_injections          remote_tlb_flush
+halt_exits		            irq_exits			            nmi_window_exits        remote_tlb_flush_requests
+halt_poll_fail_hist	        irq_injections		            notify_window_exits     req_event
+halt_poll_fail_ns	        irq_window_exits		        nx_lpage_splits         request_irq_exits
+halt_poll_invalid	        l1d_flush			            pages_1g	            signal_exits
+halt_poll_success_hist	    max_mmu_page_hash_collisions    pages_2m	            tlb_flush
+halt_poll_success_ns	    max_mmu_rmap_size		        pages_4k
+
+
+virsh-xmls ❱❱❱ sudo ls /sys/kernel/debug/kvm/76194-11
+blocking		            halt_successful_poll    l1d_flush		                nmi_injections	    pf_taken
+directed_yield_attempted    halt_wait_hist	        max_mmu_page_hash_collisions    nmi_window_exits    preemption_other
+directed_yield_successful   halt_wait_ns		    max_mmu_rmap_size	            notify_window_exits preemption_reported
+exits			            halt_wakeup		        mmio_exits		                nx_lpage_splits	    remote_tlb_flush
+fpu_reload		            host_state_reload	    mmu_cache_miss		            pages_1g	        remote_tlb_flush_requests
+guest_mode		            hypercalls		        mmu_flooded		                pages_2m		    req_event
+halt_attempted_poll	        insn_emulation	        mmu_pde_zapped		            pages_4k		    request_irq_exits
+halt_exits		            insn_emulation_fail	    mmu_pte_write		            pf_emulate	        signal_exits
+halt_poll_fail_hist	        invlpg		            mmu_recycled		            pf_fast		        tlb_flush
+halt_poll_fail_ns	        io_exits		        mmu_rmaps_stat		            pf_fixed		    vcpu0
+halt_poll_invalid	        irq_exits		        mmu_shadow_zapped	            pf_guest		    vcpu1
+halt_poll_success_hist	    irq_injections	        mmu_unsync		                pf_mmio_spte_created
+halt_poll_success_ns	    irq_window_exits	    nested_run		                pf_spurious
