@@ -1,0 +1,858 @@
+.
+├── accel
+│   ├── hvf
+│   ├── kvm
+│   ├── mshv
+│   ├── qtest
+│   ├── stubs
+│   ├── tcg
+│   └── xen
+├── audio
+├── authz
+├── backends
+│   └── tpm
+├── block
+│   ├── export
+│   └── monitor
+├── bsd-user
+├── chardev
+├── common-user
+├── configs
+│   └── targets
+├── contrib
+│   ├── elf2dmp
+│   │   └── elf2dmp.p
+│   ├── ivshmem-client
+│   │   └── ivshmem-client.p
+│   ├── ivshmem-server
+│   │   └── ivshmem-server.p
+│   ├── plugins
+│   │   ├── libbbv.so.p
+│   │   ├── libcache.so.p
+│   │   ├── libcflow.so.p
+│   │   ├── libdrcov.so.p
+│   │   ├── libexeclog.so.p
+│   │   ├── libhotblocks.so.p
+│   │   ├── libhotpages.so.p
+│   │   ├── libhowvec.so.p
+│   │   ├── libhwprofile.so.p
+│   │   ├── libips.so.p
+│   │   ├── liblockstep.so.p
+│   │   ├── libstoptrigger.so.p
+│   │   ├── libtraps.so.p
+│   │   └── libuftrace.so.p
+│   ├── vhost-user-blk
+│   │   └── vhost-user-blk.p
+│   ├── vhost-user-gpu
+│   ├── vhost-user-input
+│   │   └── vhost-user-input.p
+│   └── vhost-user-scsi
+│       └── vhost-user-scsi.p
+├── crypto
+├── disas
+├── docs
+│   ├── config -> /home/sagar/qemu-tests/qemu/docs/config
+│   ├── manual
+│   │   ├── about
+│   │   ├── devel
+│   │   │   ├── migration
+│   │   │   └── testing
+│   │   ├── interop
+│   │   ├── specs
+│   │   ├── _static
+│   │   │   ├── css
+│   │   │   ├── fonts
+│   │   │   └── js
+│   │   ├── system
+│   │   │   ├── arm
+│   │   │   ├── devices
+│   │   │   │   └── virtio
+│   │   │   ├── i386
+│   │   │   ├── loongarch
+│   │   │   ├── openrisc
+│   │   │   ├── ppc
+│   │   │   ├── riscv
+│   │   │   └── s390x
+│   │   ├── tools
+│   │   └── user
+│   └── manual.p
+│       ├── about
+│       ├── devel
+│       │   ├── migration
+│       │   └── testing
+│       ├── interop
+│       ├── specs
+│       ├── system
+│       │   ├── arm
+│       │   ├── devices
+│       │   │   └── virtio
+│       │   ├── i386
+│       │   ├── loongarch
+│       │   ├── openrisc
+│       │   ├── ppc
+│       │   ├── riscv
+│       │   └── s390x
+│       ├── tools
+│       └── user
+├── dump
+├── ebpf
+├── fpu
+├── fsdev
+├── gdbstub
+├── hw
+│   ├── 9pfs
+│   ├── acpi
+│   ├── adc
+│   ├── alpha
+│   ├── arm
+│   ├── audio
+│   ├── avr
+│   ├── block
+│   │   └── dataplane
+│   ├── char
+│   ├── core
+│   ├── cpu
+│   ├── cxl
+│   ├── display
+│   ├── dma
+│   ├── fsi
+│   ├── gpio
+│   ├── hppa
+│   ├── hyperv
+│   ├── i2c
+│   ├── i386
+│   │   ├── kvm
+│   │   └── xen
+│   ├── ide
+│   ├── input
+│   ├── intc
+│   ├── ipack
+│   ├── ipmi
+│   ├── isa
+│   ├── loongarch
+│   ├── m68k
+│   ├── mem
+│   ├── microblaze
+│   ├── mips
+│   ├── misc
+│   │   └── macio
+│   ├── net
+│   │   └── can
+│   ├── nubus
+│   ├── nvme
+│   ├── nvram
+│   ├── openrisc
+│   ├── pci
+│   ├── pci-bridge
+│   ├── pci-host
+│   ├── ppc
+│   ├── remote
+│   ├── riscv
+│   ├── rtc
+│   ├── rx
+│   ├── s390x
+│   ├── scsi
+│   ├── sd
+│   ├── sensor
+│   ├── sh4
+│   ├── smbios
+│   ├── sparc
+│   ├── sparc64
+│   ├── ssi
+│   ├── timer
+│   ├── tpm
+│   ├── tricore
+│   ├── uefi
+│   ├── ufs
+│   ├── usb
+│   ├── vfio
+│   ├── vfio-user
+│   ├── virtio
+│   ├── vmapple
+│   ├── watchdog
+│   ├── xen
+│   ├── xenpv
+│   └── xtensa
+├── io
+├── libauthz.a.p
+├── libblock.a.p
+├── libblockdev.a.p
+├── libchardev.a.p
+├── libcommon.a.p
+├── libcommon_arm.a.p
+├── libcrypto.a.p
+├── libdecnumber
+├── libevent-loop-base.a.p
+├── libhwcore.a.p
+├── libio.a.p
+├── libmigration.a.p
+├── libqemu-aarch64_be-linux-user.a.p
+├── libqemu-aarch64-linux-user.a.p
+├── libqemu-aarch64-softmmu.a.p
+├── libqemu-alpha-linux-user.a.p
+├── libqemu-alpha-softmmu.a.p
+├── libqemu-armeb-linux-user.a.p
+├── libqemu-arm-linux-user.a.p
+├── libqemu-arm-softmmu.a.p
+├── libqemu-avr-softmmu.a.p
+├── libqemu-hexagon-linux-user.a.p
+├── libqemu-hppa-linux-user.a.p
+├── libqemu-hppa-softmmu.a.p
+├── libqemu-i386-linux-user.a.p
+├── libqemu-i386-softmmu.a.p
+├── libqemu-loongarch64-linux-user.a.p
+├── libqemu-loongarch64-softmmu.a.p
+├── libqemu-m68k-linux-user.a.p
+├── libqemu-m68k-softmmu.a.p
+├── libqemu-microblazeel-linux-user.a.p
+├── libqemu-microblazeel-softmmu.a.p
+├── libqemu-microblaze-linux-user.a.p
+├── libqemu-microblaze-softmmu.a.p
+├── libqemu-mips64el-linux-user.a.p
+├── libqemu-mips64el-softmmu.a.p
+├── libqemu-mips64-linux-user.a.p
+├── libqemu-mips64-softmmu.a.p
+├── libqemu-mipsel-linux-user.a.p
+├── libqemu-mipsel-softmmu.a.p
+├── libqemu-mips-linux-user.a.p
+├── libqemu-mipsn32el-linux-user.a.p
+├── libqemu-mipsn32-linux-user.a.p
+├── libqemu-mips-softmmu.a.p
+├── libqemu-or1k-linux-user.a.p
+├── libqemu-or1k-softmmu.a.p
+├── libqemu-ppc64le-linux-user.a.p
+├── libqemu-ppc64-linux-user.a.p
+├── libqemu-ppc64-softmmu.a.p
+├── libqemu-ppc-linux-user.a.p
+├── libqemu-ppc-softmmu.a.p
+├── libqemu-riscv32-linux-user.a.p
+├── libqemu-riscv32-softmmu.a.p
+├── libqemu-riscv64-linux-user.a.p
+├── libqemu-riscv64-softmmu.a.p
+├── libqemu-rx-softmmu.a.p
+├── libqemu-s390x-linux-user.a.p
+├── libqemu-s390x-softmmu.a.p
+├── libqemu-sh4eb-linux-user.a.p
+├── libqemu-sh4eb-softmmu.a.p
+├── libqemu-sh4-linux-user.a.p
+├── libqemu-sh4-softmmu.a.p
+├── libqemu-sparc32plus-linux-user.a.p
+├── libqemu-sparc64-linux-user.a.p
+├── libqemu-sparc64-softmmu.a.p
+├── libqemu-sparc-linux-user.a.p
+├── libqemu-sparc-softmmu.a.p
+├── libqemu-tricore-softmmu.a.p
+├── libqemuutil.a.p
+├── libqemu-x86_64-linux-user.a.p
+├── libqemu-x86_64-softmmu.a.p
+├── libqemu-xtensaeb-linux-user.a.p
+├── libqemu-xtensaeb-softmmu.a.p
+├── libqemu-xtensa-linux-user.a.p
+├── libqemu-xtensa-softmmu.a.p
+├── libqmp.a.p
+├── libqom.a.p
+├── libsystem.a.p
+├── libsystem_arm.a.p
+├── libuser.a.p
+├── linux-headers
+│   └── asm -> /home/sagar/qemu-tests/qemu/linux-headers/asm-x86
+├── linux-user
+│   ├── aarch64
+│   ├── alpha
+│   ├── arm
+│   │   └── nwfpe
+│   ├── gen-vdso.p
+│   ├── hexagon
+│   ├── hppa
+│   ├── i386
+│   ├── loongarch64
+│   ├── m68k
+│   ├── microblaze
+│   ├── mips
+│   ├── mips64
+│   ├── openrisc
+│   ├── ppc
+│   ├── riscv
+│   ├── s390x
+│   ├── sh4
+│   ├── sparc
+│   ├── x86_64
+│   └── xtensa
+├── meson-info
+├── meson-logs
+├── meson-private
+│   ├── __CMake_compiler_info__
+│   │   └── CMakeFiles
+│   │       ├── 3.28.3
+│   │       │   └── CompilerIdC
+│   │       │       └── tmp
+│   │       ├── CMakeScratch
+│   │       └── pkgRedirects
+│   ├── cmake_libcbor
+│   ├── cmake_SDL2
+│   │   └── CMakeFiles
+│   │       ├── 3.28.3
+│   │       └── pkgRedirects
+│   └── temp
+│       └── sphinx
+│           └── out
+│               └── _static
+│                   ├── css
+│                   ├── fonts
+│                   └── js
+├── meson-uninstalled
+├── migration
+├── monitor
+├── nbd
+├── net
+│   └── can
+├── pc-bios
+│   ├── descriptors
+│   ├── dtb
+│   ├── keymaps
+│   ├── optionrom
+│   ├── s390-ccw
+│   └── vof
+├── plugins
+├── python -> /home/sagar/qemu-tests/qemu/python
+├── pyvenv
+│   ├── bin
+│   ├── include
+│   │   └── python3.12
+│   ├── lib
+│   │   └── python3.12
+│   │       └── site-packages
+│   │           ├── meson-1.10.0.dist-info
+│   │           │   └── licenses
+│   │           ├── mesonbuild
+│   │           │   ├── ast
+│   │           │   │   └── __pycache__
+│   │           │   ├── backend
+│   │           │   │   └── __pycache__
+│   │           │   ├── cargo
+│   │           │   │   └── __pycache__
+│   │           │   ├── cmake
+│   │           │   │   ├── data
+│   │           │   │   │   └── __pycache__
+│   │           │   │   └── __pycache__
+│   │           │   ├── compilers
+│   │           │   │   ├── mixins
+│   │           │   │   │   └── __pycache__
+│   │           │   │   └── __pycache__
+│   │           │   ├── dependencies
+│   │           │   │   ├── data
+│   │           │   │   │   └── __pycache__
+│   │           │   │   └── __pycache__
+│   │           │   ├── interpreter
+│   │           │   │   ├── primitives
+│   │           │   │   │   └── __pycache__
+│   │           │   │   └── __pycache__
+│   │           │   ├── interpreterbase
+│   │           │   │   └── __pycache__
+│   │           │   ├── linkers
+│   │           │   │   └── __pycache__
+│   │           │   ├── modules
+│   │           │   │   └── __pycache__
+│   │           │   ├── __pycache__
+│   │           │   ├── scripts
+│   │           │   │   └── __pycache__
+│   │           │   ├── templates
+│   │           │   │   └── __pycache__
+│   │           │   ├── utils
+│   │           │   │   └── __pycache__
+│   │           │   └── wrap
+│   │           │       └── __pycache__
+│   │           ├── pycotap
+│   │           │   └── __pycache__
+│   │           └── pycotap-1.3.1.dist-info
+│   ├── lib64 -> lib
+│   └── share
+│       ├── man
+│       │   └── man1
+│       └── polkit-1
+│           └── actions
+├── qapi
+├── qemu-aarch64_be.p
+├── qemu-aarch64.p
+├── qemu-alpha.p
+├── qemu-armeb.p
+├── qemu-arm.p
+├── qemu-bridge-helper.p
+├── qemu-bundle
+│   └── usr
+│       └── local
+│           ├── bin
+│           ├── include
+│           ├── lib
+│           │   └── x86_64-linux-gnu
+│           │       └── pkgconfig
+│           ├── libexec
+│           └── share
+│               ├── applications
+│               ├── doc
+│               │   └── qemu -> /home/sagar/qemu-tests/build/docs/manual
+│               ├── icons
+│               │   └── hicolor
+│               │       ├── 128x128
+│               │       │   └── apps
+│               │       ├── 16x16
+│               │       │   └── apps
+│               │       ├── 24x24
+│               │       │   └── apps
+│               │       ├── 256x256
+│               │       │   └── apps
+│               │       ├── 32x32
+│               │       │   └── apps
+│               │       ├── 48x48
+│               │       │   └── apps
+│               │       ├── 512x512
+│               │       │   └── apps
+│               │       ├── 64x64
+│               │       │   └── apps
+│               │       └── scalable
+│               │           └── apps
+│               ├── man
+│               │   ├── man1
+│               │   ├── man7
+│               │   └── man8
+│               └── qemu
+│                   ├── dtb
+│                   ├── firmware
+│                   └── keymaps
+├── qemu-edid.p
+├── qemu-hexagon.p
+├── qemu-hppa.p
+├── qemu-i386.p
+├── qemu-img.p
+├── qemu-io.p
+├── qemu-loongarch64.p
+├── qemu-m68k.p
+├── qemu-microblazeel.p
+├── qemu-microblaze.p
+├── qemu-mips64el.p
+├── qemu-mips64.p
+├── qemu-mipsel.p
+├── qemu-mipsn32el.p
+├── qemu-mipsn32.p
+├── qemu-mips.p
+├── qemu-nbd.p
+├── qemu-or1k.p
+├── qemu-ppc64le.p
+├── qemu-ppc64.p
+├── qemu-ppc.p
+├── qemu-pr-helper.p
+├── qemu-riscv32.p
+├── qemu-riscv64.p
+├── qemu-s390x.p
+├── qemu-sh4eb.p
+├── qemu-sh4.p
+├── qemu-sparc32plus.p
+├── qemu-sparc64.p
+├── qemu-sparc.p
+├── qemu-system-aarch64.p
+├── qemu-system-alpha.p
+├── qemu-system-arm.p
+├── qemu-system-avr.p
+├── qemu-system-hppa.p
+├── qemu-system-i386.p
+├── qemu-system-loongarch64.p
+├── qemu-system-m68k.p
+├── qemu-system-microblazeel.p
+├── qemu-system-microblaze.p
+├── qemu-system-mips64el.p
+├── qemu-system-mips64.p
+├── qemu-system-mipsel.p
+├── qemu-system-mips.p
+├── qemu-system-or1k.p
+├── qemu-system-ppc64.p
+├── qemu-system-ppc.p
+├── qemu-system-riscv32.p
+├── qemu-system-riscv64.p
+├── qemu-system-rx.p
+├── qemu-system-s390x.p
+├── qemu-system-sh4eb.p
+├── qemu-system-sh4.p
+├── qemu-system-sparc64.p
+├── qemu-system-sparc.p
+├── qemu-system-tricore.p
+├── qemu-system-x86_64.p
+├── qemu-system-xtensaeb.p
+├── qemu-system-xtensa.p
+├── qemu-vmsr-helper.p
+├── qemu-x86_64.p
+├── qemu-xtensaeb.p
+├── qemu-xtensa.p
+├── qga
+│   ├── qemu-ga.p
+│   └── qga-ssh-test.p
+├── qobject
+├── qom
+├── replay
+├── scripts -> /home/sagar/qemu-tests/qemu/scripts
+├── scsi
+├── semihosting
+├── stats
+├── storage-daemon
+│   ├── qapi
+│   └── qemu-storage-daemon.p
+├── stubs
+├── subprojects
+│   ├── berkeley-softfloat-3
+│   │   └── libsoftfloat.a.p
+│   ├── berkeley-testfloat-3
+│   │   ├── libslowfloat.a.p
+│   │   └── libtestfloat.a.p
+│   ├── dtc
+│   │   └── libfdt
+│   │       └── libfdt.a.p
+│   ├── keycodemapdb
+│   ├── libvduse
+│   │   └── libvduse.a.p
+│   └── libvhost-user
+│       ├── libvhost-user.a.p
+│       ├── libvhost-user-glib.a.p
+│       └── link-test.p
+├── system
+├── target
+│   ├── alpha
+│   ├── arm
+│   │   ├── hvf
+│   │   └── tcg
+│   ├── avr
+│   ├── hexagon
+│   │   ├── gen_dectree_import.p
+│   │   ├── gen_semantics.p
+│   │   ├── idef-parser.p
+│   │   └── __pycache__
+│   ├── hppa
+│   ├── i386
+│   │   ├── emulate
+│   │   ├── hvf
+│   │   ├── kvm
+│   │   ├── mshv
+│   │   ├── nvmm
+│   │   ├── tcg
+│   │   │   ├── system
+│   │   │   └── user
+│   │   └── whpx
+│   ├── loongarch
+│   │   ├── kvm
+│   │   └── tcg
+│   ├── m68k
+│   ├── microblaze
+│   ├── mips
+│   │   ├── system
+│   │   └── tcg
+│   │       └── system
+│   ├── openrisc
+│   ├── ppc
+│   ├── riscv
+│   │   ├── kvm
+│   │   └── tcg
+│   ├── rx
+│   ├── s390x
+│   │   ├── gen-features.p
+│   │   ├── kvm
+│   │   └── tcg
+│   ├── sh4
+│   ├── sparc
+│   ├── tricore
+│   └── xtensa
+├── tcg
+├── tests
+│   ├── bench
+│   │   ├── atomic64-bench.p
+│   │   ├── atomic_add-bench.p
+│   │   ├── benchmark-crypto-akcipher.p
+│   │   ├── benchmark-crypto-cipher.p
+│   │   ├── benchmark-crypto-hash.p
+│   │   ├── benchmark-crypto-hmac.p
+│   │   ├── bufferiszero-bench.p
+│   │   ├── qht-bench.p
+│   │   └── qtree-bench.p
+│   ├── data -> /home/sagar/qemu-tests/qemu/tests/data
+│   ├── decode
+│   ├── fp
+│   │   ├── fp-bench.p
+│   │   ├── fp-test-log2.p
+│   │   └── fp-test.p
+│   ├── functional
+│   │   ├── aarch64
+│   │   ├── alpha
+│   │   ├── arm
+│   │   ├── avr
+│   │   ├── generic
+│   │   ├── hppa
+│   │   ├── i386
+│   │   ├── loongarch64
+│   │   ├── m68k
+│   │   ├── microblaze
+│   │   ├── microblazeel
+│   │   ├── mips
+│   │   ├── mips64
+│   │   ├── mips64el
+│   │   ├── mipsel
+│   │   ├── or1k
+│   │   ├── ppc
+│   │   ├── ppc64
+│   │   ├── riscv32
+│   │   ├── riscv64
+│   │   ├── rx
+│   │   ├── s390x
+│   │   ├── sh4
+│   │   ├── sh4eb
+│   │   ├── sparc
+│   │   ├── sparc64
+│   │   ├── x86_64
+│   │   └── xtensa
+│   ├── include
+│   ├── libtestqapi.a.p
+│   ├── migration-stress
+│   │   └── stress.p
+│   ├── qapi-schema
+│   ├── qemu-iotests
+│   ├── qtest
+│   │   ├── ahci-test.p
+│   │   ├── am53c974-test.p
+│   │   ├── arm-cpu-features.p
+│   │   ├── aspeed_fsi-test.p
+│   │   ├── aspeed_gpio-test.p
+│   │   ├── aspeed_hace-test.p
+│   │   ├── aspeed_scu-test.p
+│   │   ├── aspeed_smc-test.p
+│   │   ├── ast2700-gpio-test.p
+│   │   ├── ast2700-hace-test.p
+│   │   ├── ast2700-smc-test.p
+│   │   ├── bcm2835-dma-test.p
+│   │   ├── bcm2835-i2c-test.p
+│   │   ├── bios-tables-test.p
+│   │   ├── boot-order-test.p
+│   │   ├── boot-serial-test.p
+│   │   ├── cdrom-test.p
+│   │   ├── cmsdk-apb-dualtimer-test.p
+│   │   ├── cmsdk-apb-timer-test.p
+│   │   ├── cmsdk-apb-watchdog-test.p
+│   │   ├── cpu-plug-test.p
+│   │   ├── cxl-test.p
+│   │   ├── dbus-display-test.p
+│   │   ├── device-introspect-test.p
+│   │   ├── device-plug-test.p
+│   │   ├── display-vga-test.p
+│   │   ├── dm163-test.p
+│   │   ├── drive_del-test.p
+│   │   ├── endianness-test.p
+│   │   ├── erst-test.p
+│   │   ├── fdc-test.p
+│   │   ├── fuzz
+│   │   ├── fuzz-e1000e-test.p
+│   │   ├── fuzz-lsi53c895a-test.p
+│   │   ├── fuzz-megasas-test.p
+│   │   ├── fuzz-sb16-test.p
+│   │   ├── fuzz-sdcard-test.p
+│   │   ├── fuzz-virtio-scsi-test.p
+│   │   ├── fw_cfg-test.p
+│   │   ├── hd-geo-test.p
+│   │   ├── hexloader-test.p
+│   │   ├── i440fx-test.p
+│   │   ├── i82801b11-test.p
+│   │   ├── ide-test.p
+│   │   ├── intel-hda-test.p
+│   │   ├── intel-iommu-test.p
+│   │   ├── ioh3420-test.p
+│   │   ├── ipmi-bt-test.p
+│   │   ├── ipmi-kcs-test.p
+│   │   ├── ivshmem-test.p
+│   │   ├── libqos
+│   │   │   └── libqos.a.p
+│   │   ├── lpc-ich9-test.p
+│   │   ├── m48t59-test.p
+│   │   ├── machine-none-test.p
+│   │   ├── microbit-test.p
+│   │   ├── migration-test.p
+│   │   ├── netdev-socket.p
+│   │   ├── npcm7xx_adc-test.p
+│   │   ├── npcm7xx_gpio-test.p
+│   │   ├── npcm7xx_pwm-test.p
+│   │   ├── npcm7xx_rng-test.p
+│   │   ├── npcm7xx_sdhci-test.p
+│   │   ├── npcm7xx_smbus-test.p
+│   │   ├── npcm7xx_timer-test.p
+│   │   ├── npcm7xx_watchdog_timer-test.p
+│   │   ├── npcm_gmac-test.p
+│   │   ├── numa-test.p
+│   │   ├── pflash-cfi02-test.p
+│   │   ├── pnv-host-i2c-test.p
+│   │   ├── pnv-spi-seeprom-test.p
+│   │   ├── pnv-xive2-test.p
+│   │   ├── pnv-xscom-test.p
+│   │   ├── prom-env-test.p
+│   │   ├── pvpanic-pci-test.p
+│   │   ├── pvpanic-test.p
+│   │   ├── q35-test.p
+│   │   ├── qmp-cmd-test.p
+│   │   ├── qmp-test.p
+│   │   ├── qom-test.p
+│   │   ├── qos-test.p
+│   │   ├── readconfig-test.p
+│   │   ├── riscv-csr-test.p
+│   │   ├── rtas-test.p
+│   │   ├── rtc-test.p
+│   │   ├── rtl8139-test.p
+│   │   ├── sifive-e-aon-watchdog-test.p
+│   │   ├── sse-timer-test.p
+│   │   ├── stm32l4x5_exti-test.p
+│   │   ├── stm32l4x5_gpio-test.p
+│   │   ├── stm32l4x5_rcc-test.p
+│   │   ├── stm32l4x5_syscfg-test.p
+│   │   ├── stm32l4x5_usart-test.p
+│   │   ├── tco-test.p
+│   │   ├── test-arm-mptimer.p
+│   │   ├── test-filter-mirror.p
+│   │   ├── test-filter-redirector.p
+│   │   ├── test-hmp.p
+│   │   ├── test-x86-cpuid-compat.p
+│   │   ├── tpm-crb-swtpm-test.p
+│   │   ├── tpm-crb-test.p
+│   │   ├── tpm-tis-device-swtpm-test.p
+│   │   ├── tpm-tis-device-test.p
+│   │   ├── tpm-tis-i2c-test.p
+│   │   ├── tpm-tis-swtpm-test.p
+│   │   ├── tpm-tis-test.p
+│   │   ├── usb-hcd-ehci-test.p
+│   │   ├── usb-hcd-uhci-test.p
+│   │   ├── usb-hcd-xhci-test.p
+│   │   ├── virtio-balloon-test.p
+│   │   ├── virtio-ccw-test.p
+│   │   ├── vmcoreinfo-test.p
+│   │   ├── vmgenid-test.p
+│   │   ├── wdt_ib700-test.p
+│   │   ├── xlnx-canfd-test.p
+│   │   └── xlnx-versal-trng-test.p
+│   ├── tcg
+│   │   ├── plugins
+│   │   │   ├── libbb.so.p
+│   │   │   ├── libdiscons.so.p
+│   │   │   ├── libempty.so.p
+│   │   │   ├── libinline.so.p
+│   │   │   ├── libinsn.so.p
+│   │   │   ├── libmem.so.p
+│   │   │   ├── libpatch.so.p
+│   │   │   ├── libreset.so.p
+│   │   │   └── libsyscall.so.p
+│   │   ├── x86_64-linux-user
+│   │   └── x86_64-softmmu
+│   ├── tracetool
+│   ├── unit
+│   │   ├── check-block-qdict.p
+│   │   ├── check-qdict.p
+│   │   ├── check-qjson.p
+│   │   ├── check-qlist.p
+│   │   ├── check-qlit.p
+│   │   ├── check-qnull.p
+│   │   ├── check-qnum.p
+│   │   ├── check-qobject.p
+│   │   ├── check-qom-interface.p
+│   │   ├── check-qom-proplist.p
+│   │   ├── check-qstring.p
+│   │   ├── ptimer-test.p
+│   │   ├── rcutorture.p
+│   │   ├── test-aio-multithread.p
+│   │   ├── test-aio.p
+│   │   ├── test-authz-listfile.p
+│   │   ├── test-authz-list.p
+│   │   ├── test-authz-pam.p
+│   │   ├── test-authz-simple.p
+│   │   ├── test-base64.p
+│   │   ├── test-bdrv-drain.p
+│   │   ├── test-bdrv-graph-mod.p
+│   │   ├── test-bitcnt.p
+│   │   ├── test-bitmap.p
+│   │   ├── test-bitops.p
+│   │   ├── test-block-backend.p
+│   │   ├── test-block-iothread.p
+│   │   ├── test-blockjob.p
+│   │   ├── test-blockjob-txn.p
+│   │   ├── test-bufferiszero.p
+│   │   ├── test-char.p
+│   │   ├── test-clone-visitor.p
+│   │   ├── test-coroutine.p
+│   │   ├── test-crypto-afsplit.p
+│   │   ├── test-crypto-akcipher.p
+│   │   ├── test-crypto-block.p
+│   │   ├── test-crypto-cipher.p
+│   │   ├── test-crypto-der.p
+│   │   ├── test-crypto-hash.p
+│   │   ├── test-crypto-hmac.p
+│   │   ├── test-crypto-ivgen.p
+│   │   ├── test-crypto-pbkdf.p
+│   │   ├── test-crypto-secret.p
+│   │   ├── test-crypto-tlscredsx509.p
+│   │   ├── test-crypto-tlssession.p
+│   │   ├── test-cutils.p
+│   │   ├── test-div128.p
+│   │   ├── test-error-report.p
+│   │   ├── test-fifo.p
+│   │   ├── test-forward-visitor.p
+│   │   ├── test-hbitmap.p
+│   │   ├── test-image-locking.p
+│   │   ├── test-int128.p
+│   │   ├── test-interval-tree.p
+│   │   ├── test-io-channel-buffer.p
+│   │   ├── test-io-channel-command.p
+│   │   ├── test-io-channel-file.p
+│   │   ├── test-io-channel-null.p
+│   │   ├── test-io-channel-socket.p
+│   │   ├── test-io-channel-tls.p
+│   │   ├── test-io-task.p
+│   │   ├── test-iov.p
+│   │   ├── test-keyval.p
+│   │   ├── test-logging.p
+│   │   ├── test-mul64.p
+│   │   ├── test-nested-aio-poll.p
+│   │   ├── test-opts-visitor.p
+│   │   ├── test-qapi-util.p
+│   │   ├── test-qdev-global-props.p
+│   │   ├── test-qdist.p
+│   │   ├── test-qemu-opts.p
+│   │   ├── test-qga.p
+│   │   ├── test-qgraph.p
+│   │   ├── test-qht.p
+│   │   ├── test-qmp-cmds.p
+│   │   ├── test-qmp-event.p
+│   │   ├── test-qobject-input-visitor.p
+│   │   ├── test-qobject-output-visitor.p
+│   │   ├── test-qtree.p
+│   │   ├── test-rcu-list.p
+│   │   ├── test-rcu-simpleq.p
+│   │   ├── test-rcu-slist.p
+│   │   ├── test-rcu-tailq.p
+│   │   ├── test-replication.p
+│   │   ├── test-resv-mem.p
+│   │   ├── test-seccomp.p
+│   │   ├── test-shift128.p
+│   │   ├── test-smp-parse.p
+│   │   ├── test-string-input-visitor.p
+│   │   ├── test-string-output-visitor.p
+│   │   ├── test-thread-pool.p
+│   │   ├── test-throttle.p
+│   │   ├── test-timed-average.p
+│   │   ├── test-util-filemonitor.p
+│   │   ├── test-util-sockets.p
+│   │   ├── test-uuid.p
+│   │   ├── test-virtio-dmabuf.p
+│   │   ├── test-visitor-serialization.p
+│   │   ├── test-vmstate.p
+│   │   ├── test-write-threshold.p
+│   │   ├── test-x86-topo.p
+│   │   ├── test-xbzrle.p
+│   │   ├── test-xs-node.p
+│   │   └── test-yank.p
+│   └── vhost-user-bridge.p
+├── tools
+├── trace
+├── ui
+│   ├── icons
+│   └── shader
+└── util
+
+856 directories
