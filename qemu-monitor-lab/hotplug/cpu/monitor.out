@@ -1,0 +1,32 @@
+(qemu) device_add qemu64-x86_64-cpu,socket-id=0,core-id=3,thread-id=0,id=cpu3
+device_add qemu64-x86_64-cpu,socket-id=0,core-id=3,thread-id=0,id=cpu3
+warning: host doesn't support requested feature: CPUID.80000001H:ECX.svm [bit 2]
+(qemu)
+(qemu) lscpu
+lscpu
+unknown command: 'lscpu'
+(qemu)
+(qemu) info cpus
+info cpus
+* CPU #0: thread_id=1137893
+  CPU #1: thread_id=1137894
+  CPU #2: thread_id=1137969
+  CPU #3: thread_id=1138011
+(qemu)
+(qemu) device_add qemu64-x86_64-cpu,socket-id=0,core-id=4,thread-id=0,id=cpu4
+device_add qemu64-x86_64-cpu,socket-id=0,core-id=4,thread-id=0,id=cpu4
+warning: host doesn't support requested feature: CPUID.80000001H:ECX.svm [bit 2]
+(qemu)
+(qemu) lscpu
+lscpu
+unknown command: 'lscpu'
+(qemu)
+(qemu) info cpus
+info cpus
+* CPU #0: thread_id=1137893
+  CPU #1: thread_id=1137894
+  CPU #2: thread_id=1137969
+  CPU #3: thread_id=1138011
+  CPU #4: thread_id=1138016
+(qemu)
+(qemu)

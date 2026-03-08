@@ -1,0 +1,3 @@
+(qemu) info hotpluggable-cpus
+(qemu) device_add qemu64-x86_64-cpu,socket-id=0,core-id=2,thread-id=0,id=cpu2
+(qemu) info cpus

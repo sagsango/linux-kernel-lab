@@ -1,0 +1,38 @@
+ubuntu@ubuntu-lkp:~$ cat dmesg.out | grep -i cpu
+[    0.013048] smpboot: Allowing 8 CPUs, 6 hotplug CPUs
+[    0.021061] setup_percpu: NR_CPUS:64 nr_cpumask_bits:8 nr_cpu_ids:8 nr_node_ids:1
+[    0.021682] percpu: Embedded 55 pages/cpu s184552 r8192 d32536 u262144
+[    0.021687] pcpu-alloc: s184552 r8192 d32536 u262144 alloc=1*2097152
+[    0.021690] pcpu-alloc: [0] 0 1 2 3 4 5 6 7
+[    0.028435] SLUB: HWalign=64, Order=0-3, MinObjects=0, CPUs=8, Nodes=1
+[    0.030431] rcu: 	RCU restricting CPUs from NR_CPUS=64 to nr_cpu_ids=8.
+[    0.030435] rcu: Adjusting geometry for rcu_fanout_leaf=16, nr_cpu_ids=8
+[    0.174128] MDS: Vulnerable: Clear CPU buffers attempted, no microcode
+[    0.307282] smpboot: CPU0: Intel QEMU Virtual CPU version 2.5+ (family: 0xf, model: 0x6b, stepping: 0x1)
+[    0.309137] Performance Events: unsupported Netburst CPU model 107 no PMU driver, software events only.
+[    0.313329] smp: Bringing up secondary CPUs ...
+[    0.314133] .... node  #0, CPUs:      #1
+[    0.327162] smp: Brought up 1 node, 2 CPUs
+[    0.339143] cpuidle: using governor menu
+[    0.360734] ACPI: _OSC evaluation for CPUs failed, trying _PDC
+[    0.522745] hpet: 3 channels of 0 reserved for per-cpu timers
+[    1.319946] intel_pstate: CPU model not supported
+[    2.231010] systemd[1]: UML virtualization not found in /proc/cpuinfo.
+[    2.233353] systemd[1]: Virtualization found, CPUID=KVMKVMKVM
+[    2.307925] systemd[1]: CPUID func 1 0
+[    2.309025] systemd[1]: CPUID result 60fb1 80800 80202001 178bfbfd
+[    2.310786] systemd[1]: CPUID is hypervisor: yes
+[    2.312120] systemd[1]: CPUID func 0 0
+[    2.313210] systemd[1]: CPUID result d 756e6547 6c65746e 49656e69
+[    2.314970] systemd[1]: CPUID sig 'GenuineIntel'
+[    2.316300] systemd[1]: CPUID func 80000000 0
+[    2.317570] systemd[1]: CPUID result 8000000a 756e6547 6c65746e 49656e69
+[    2.319488] systemd[1]: CPUID func 21 0
+[    2.320600] systemd[1]: CPUID result 0 0 0 0
+[    2.321848] systemd[1]: CPUID sig ''
+[    2.362086] systemd[1]: Controller 'cpu' supported: yes
+[    2.362901] systemd[1]: Controller 'cpuacct' supported: no
+[    2.363701] systemd[1]: Controller 'cpuset' supported: yes
+[  493.294898] ACPI: CPU2 has been hot-added
+[  801.001819] ACPI: CPU3 has been hot-added
+[  860.973830] ACPI: CPU4 has been hot-added
