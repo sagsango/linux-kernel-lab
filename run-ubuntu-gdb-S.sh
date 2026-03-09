@@ -15,6 +15,7 @@ sudo ${QEMU_BIN} \
     -nographic \
     -smp ${NCPU} -m ${MEMSIZE} \
     -nic user,host=10.0.2.10,hostfwd=tcp:127.0.0.1:2200-:22 \
+    -monitor tcp:127.0.0.1:4444,server,nowait \
     -net nic,model=e1000 \
     -drive file=${UBUNTU_IMG},format=qcow2 \
     -kernel ${BZIMAGE} \
