@@ -10,3 +10,6 @@
 [submodule "cs561-examples"]
 	path = cs561-examples
 	url = https://github.com/sagsango/cs561-examples.git
+[submodule "ebpf-lab"]
+	path = ebpf-lab
+	url = https://github.com/sagsango/ebpf-lab.git
